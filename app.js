@@ -9,14 +9,21 @@ const port = 3000
 mongoose.connect("mongodb://localhost:32768/restful_blog_app", {useNewUrlParser: true})
 // TODO: mongoose schema
 const blogSchema = new mongoose.Schema({
-    name: String,
+    title: String,
     image: String,
     description: String,
-    created: {type: String, default: Date.now()}
+    created: {type: Date, default: Date.now}
 })
 // TODO: mongoose model
 const Blog = mongoose.model("Campground", blogSchema)
 // mongoose end config
+// todo: Создать демо запись в бд
+// Blog.create({
+//     name: "Test Name",
+//     image: "https://hunyadi.info.hu/levente/images/stories/boxplus/image3.jpg",
+//     description: "Cool bird"
+// })
+
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.set("view engine", "ejs") // что бы не писать .ejs
@@ -34,7 +41,6 @@ app.get("/blogs", (req, res) => {
             console.log(err)
         } else {
             res.render("index", {blogs: blogs})
-            // todo: Создать демо запись в бд
         }
     })
 })
@@ -44,7 +50,15 @@ app.get("/blogs/new", (req, res) => {
 })
 // todo: CRUD => C-create add post to db
 app.post("/blogs", (req, res) => {
-    res.render("index")
+    console.log(req.body.blog)
+    Blog.create(req.body.blog, (err, newBlog) => {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log(newBlog) // newBlog это только что созданый обьект блога из базы
+            res.redirect("/blogs")
+        }
+    })
 })
 // todo: CRUD => R-read read blogpost from db
 app.get("/blogs/:id", (req, res) => {
