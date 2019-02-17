@@ -1,0 +1,17 @@
+{
+  "name": "restfulblogapp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "~2.5.7",
+    "express": "~4.16.0",
+    "mongoose": "^5.4.13"
+  },
+  "devDependencies": {
+    "prettier": "^1.16.4"
+  }
+}
