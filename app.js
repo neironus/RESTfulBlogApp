@@ -11,7 +11,7 @@ mongoose.connect("mongodb://localhost:32768/restful_blog_app", {useNewUrlParser:
 const blogSchema = new mongoose.Schema({
     title: String,
     image: String,
-    description: String,
+    body: String,
     created: {type: Date, default: Date.now}
 })
 // TODO: mongoose model
@@ -62,7 +62,14 @@ app.post("/blogs", (req, res) => {
 })
 // todo: CRUD => R-read read blogpost from db
 app.get("/blogs/:id", (req, res) => {
-    res.render("blogPostPage")
+    Blog.findById(req.params.id, (err, foundBlog) => {
+        if (err) {
+            res.redirect("/blogs")
+        } else {
+            res.render("show", {blog: foundBlog})
+        }
+    })
+
 })
 // todo: Show blogpost edit page
 app.get("/blogs/:id/edit", (req, res) => {
