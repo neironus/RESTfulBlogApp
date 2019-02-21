@@ -1,12 +1,14 @@
 const express = require("express")
 const app = express()
 const bodyParser = require('body-parser')
+const methodOverride = require('method-override')
+const expressSanitizer = require('express-sanitizer')
 const mongoose = require('mongoose')
 const port = 3000
 
 // Mongoose config
 // TODO: connect to db
-mongoose.connect("mongodb://localhost:32768/restful_blog_app", {useNewUrlParser: true})
+mongoose.connect("mongodb://localhost:32771/restful_blog_app", {useNewUrlParser: true})
 // TODO: mongoose schema
 const blogSchema = new mongoose.Schema({
     title: String,
@@ -26,8 +28,10 @@ const Blog = mongoose.model("Campground", blogSchema)
 
 
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(expressSanitizer())
 app.set("view engine", "ejs") // что бы не писать .ejs
 app.use(express.static("public")) //
+app.use(methodOverride("_method"))
 
 // Todo: Maine page
 app.get("/", (req, res) => {
@@ -50,7 +54,7 @@ app.get("/blogs/new", (req, res) => {
 })
 // todo: CRUD => C-create add post to db
 app.post("/blogs", (req, res) => {
-    console.log(req.body.blog)
+    // console.log(req.body.blog)
     Blog.create(req.body.blog, (err, newBlog) => {
         if (err) {
             console.log(err)
@@ -73,15 +77,34 @@ app.get("/blogs/:id", (req, res) => {
 })
 // todo: Show blogpost edit page
 app.get("/blogs/:id/edit", (req, res) => {
-    res.render("edit")
+    Blog.findById(req.params.id, (err, foundBlog) => {
+        if (err){
+            res.redirect("index")
+        } else {
+            res.render("edit", {blog:foundBlog})
+        }
+    })
+
 })
 // todo: CRUD => U-update update blogpost with :id
-app.post("/blogs/:id", (req, res) => {
-    res.render("blogPostPage")
-})
+app.put("/blogs/:id", (req, res) => {
+    Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, foundedBlog) => {
+        if (err){
+            res.redirect("/blogs")
+        } else {
+            res.redirect(`/blogs/${req.params.id}`)
+        }
+})})
 // todo: CRUD => D-delete delete blogpost with :id
 app.delete("/blogs/:id", (req, res) => {
-    res.redirect("index")
+    Blog.findByIdAndRemove(req.params.id, (err) => {
+        if (err){
+            res.redirect("/blogs")
+        } else {
+            res.redirect("/blogs")
+        }
+    })
+
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
