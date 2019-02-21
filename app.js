@@ -55,6 +55,7 @@ app.get("/blogs/new", (req, res) => {
 // todo: CRUD => C-create add post to db
 app.post("/blogs", (req, res) => {
     // console.log(req.body.blog)
+    req.body.blog.body = req.sanitize(req.body.blog.body)
     Blog.create(req.body.blog, (err, newBlog) => {
         if (err) {
             console.log(err)
@@ -77,6 +78,7 @@ app.get("/blogs/:id", (req, res) => {
 })
 // todo: Show blogpost edit page
 app.get("/blogs/:id/edit", (req, res) => {
+    req.body.blog.body = req.sanitize(req.body.blog.body)
     Blog.findById(req.params.id, (err, foundBlog) => {
         if (err){
             res.redirect("index")
@@ -88,6 +90,7 @@ app.get("/blogs/:id/edit", (req, res) => {
 })
 // todo: CRUD => U-update update blogpost with :id
 app.put("/blogs/:id", (req, res) => {
+
     Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, foundedBlog) => {
         if (err){
             res.redirect("/blogs")
